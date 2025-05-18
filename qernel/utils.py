@@ -1,15 +1,27 @@
-# Numpy
-import numpy as np
-np.set_printoptions(suppress = True, linewidth=180)
+# copyright 2025 Filippo Miatto
 
-# Scipy: Matrix exponential
-from scipy.linalg import expm
+# utilities
 
-# Qutip: Bloch sphere and Quantum object
-try:
-    from qutip import Bloch, Qobj
-except ImportError:
-    print('Could not import Bloch and Qobj from qutip library. Did you install it?')
+def profile(func, *args, number=1000, **kwargs):
+    from timeit import timeit
+    import signal
+    
+    def timeout_handler(signum, frame):
+        raise TimeoutError("Function execution timed out")
+        
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(1)
+    
+    try:
+        t = timeit(lambda: func(*args, **kwargs), number=number)/number
+        signal.alarm(0)  # Disable the alarm
+        print(f"{func.__name__} took {(t*1000000):3f} µs per run")
+    except TimeoutError:
+        print(f"profiling {func.__name__} took more than 1 second, try a lower number than {number}")
+    finally:
+        signal.alarm(0)  # Ensure alarm is disabled
+
+
 
 # Matplotlib
 import matplotlib.pyplot as plt
@@ -63,19 +75,7 @@ def psi_n(L: int, dim: int, n: int) -> (np.array, np.array):
     return x, psi
 
 
-def inner_prod(v, w):
-    """
-    Computes the inner product of the two vectors v and w
-    taking care of conjugating v.
-    
-    Arguments:
-        v (np.array(complex)): ket |v>
-        w (np.array(complex)): ket |w>
-    
-    Returns:
-        (complex): the inner product <v|w>
-    """
-    return np.sum(np.conj(v) * w)
+
 
 
 def random_state(d):
