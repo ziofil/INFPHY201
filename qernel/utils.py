@@ -1,8 +1,18 @@
 # copyright 2025 Filippo Miatto
+import numpy as np
 
 # utilities
 
 def profile(func, *args, number=1000, **kwargs):
+    r"""
+    Profile the execution time of a function.
+    
+    Arguments:
+        func (callable): the function to profile
+        *args: positional arguments to pass to the function
+        number (int): the number of times to run the function
+        **kwargs: keyword arguments to pass to the function
+    """
     from timeit import timeit
     import signal
     
